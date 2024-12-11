@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const { id } = useParams();
@@ -15,10 +16,19 @@ const Login = () => {
     if (id == "professor") {
       //Professor login
 
-      let loginState = {
+      let loginState =
         //some logic
-        //return true or false
-      };
+        axios
+          .get(
+            `localhost:8000/login/?username=${username}&password=${password}&role=P`
+          )
+          .then((res) => {
+            return res.data.authenticate;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      //return true or false
 
       if (loginState == true) {
         navigation(`/professor/${username}`);
@@ -28,10 +38,18 @@ const Login = () => {
     }
     if (id == "student") {
       /*Student login */
-      let loginState = {
+      let loginState =
         //some logic
-        //return true or false
-      };
+        axios
+          .get(
+            `localhost:8000/login/?username=${username}&password=${password}&role=S`
+          )
+          .then((res) => {
+            return res.data.authenticate;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
 
       if (loginState == true) {
         navigation(`/student/${username}`);
