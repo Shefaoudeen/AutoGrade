@@ -5,6 +5,7 @@ import axios from "axios";
 const Login = () => {
   const { id } = useParams();
   const navigation = useNavigate();
+  const [authenticated, SetAuthenticated] = useState(null);
   const [username, SetUsername] = useState("");
   const [password, SetPassword] = useState("");
 
@@ -16,46 +17,53 @@ const Login = () => {
     if (id == "professor") {
       //Professor login
 
-      let loginState =
-        //some logic
-        axios
-          .get(
-            `localhost:8000/login/?username=${username}&password=${password}&role=P`
-          )
-          .then((res) => {
-            return res.data.authenticate;
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      //return true or false
-
-      if (loginState == true) {
-        navigation(`/professor/${username}`);
-      } else {
-        alert("Incorrect Username or Password");
-      }
+      axios
+        .get(
+          `http://localhost:8000/login/?username=${username}&password=${password}&role=P`
+        )
+        .then((res) => {
+          console.log(res.data);
+          if (res.data?.authenticate === true) {
+            SetAuthenticated(true);
+            navigation(`/professor/${username}`, {
+              state: {
+                professorName: res.data?.name,
+                role: "P",
+                professorId: res.data?.id,
+              },
+            });
+          } else {
+            alert("Incorrect Username or Password");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
     if (id == "student") {
       /*Student login */
-      let loginState =
-        //some logic
-        axios
-          .get(
-            `localhost:8000/login/?username=${username}&password=${password}&role=S`
-          )
-          .then((res) => {
-            return res.data.authenticate;
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-
-      if (loginState == true) {
-        navigation(`/student/${username}`);
-      } else {
-        alert("Incorrect Username or Password");
-      }
+      axios
+        .get(
+          `http://localhost:8000/login/?username=${username}&password=${password}&role=S`
+        )
+        .then((res) => {
+          console.log(res.data);
+          if (res.data?.authenticate === true) {
+            SetAuthenticated(true);
+            navigation(`/student/${username}`, {
+              state: {
+                studentName: res.data?.name,
+                role: "S",
+                studentId: res.data?.id,
+              },
+            });
+          } else {
+            alert("Incorrect Username or Password");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
 
