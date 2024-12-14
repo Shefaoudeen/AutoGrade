@@ -1,10 +1,16 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useParams, useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const ProfessorDashboard = () => {
-  const { id } = useParams();
+  const formatingDate = (date) => {
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2); // Ensure two digits for month
+    const day = ("0" + date.getDate()).slice(-2); // Ensure two digits for day
+    return `${year}-${month}-${day} 23:59:59`;
+  };
   const location = useLocation();
   const { professorName, role, professorId } = location.state || {};
   const [createScreen, SetCreateScreen] = useState(false);
@@ -16,7 +22,7 @@ const ProfessorDashboard = () => {
   const [keyfile, setkeyFile] = useState(null);
   const [output, setoutput] = useState(null);
   const [name, setname] = useState();
-  const [deadline, SetDeadline] = useState(new Date());
+  const [deadline, SetDeadline] = useState(formatingDate(new Date()));
   const [uploadedfile1, setuploadfile1] = useState(null);
   const [uploadedfile2, setuploadfile2] = useState(null);
 
@@ -30,39 +36,79 @@ const ProfessorDashboard = () => {
   };
 
   const handleSubmit = async () => {
-    setoutput({
+    /*
+    const finalResponse = {
       p_id: professorId,
       title: name,
       deadline: deadline,
-      question_path: questionfile,
-      key_path: keyfile,
+      // question_path: questionfile,
+      //key_path: keyfile,
       total_marks: mark,
       technical_setting: tech,
       grammer_setting: grammar,
       spelling_setting: speeling,
       status: "ongoing",
-    });
+    };*/
 
-    console.log(output);
+    const formData = new FormData();
+    formData.append("p_id", professorId);
+    formData.append("title", "rty");
+    formData.append("deadline", "2024-12-27 23:59:59");
+    formData.append("question_path", questionfile); // Replace with the actual file
+    formData.append("key_path", keyfile); // Replace with the actual file
+    formData.append("total_marks", 25);
+    formData.append("technical_setting", true);
+    formData.append("grammar_setting", false);
+    formData.append("spelling_setting", false);
+    formData.append("status", "ongoing");
+
     try {
-      // Axios post request
       const response = await axios.post(
-        `http://localhost:8000/professor/postAssignmnet?p_id=${professorId}&title=${name}&deadline=${deadline}&question_path=${questionfile}&key_path=${keyfile}&total_mark=${mark}&technical_setting=${tech}&grammar_setting=${grammar}&spelling_setting=${speeling}&status=ongoing`,
-        output,
+        `http://localhost:8000/professor/postAssignment?p_id=${professorId}&title=${name}&deadline=${deadline}&total_marks=${mark}&technical_setting=${tech}&grammar_setting=${grammar}&spelling_setting=${speeling}&status=ongoing`,
+        formData,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
+      console.log("File uploaded successfully:", response.data);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+  /*
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("p_id", professorId);
+    formData.append("title", name);
+    formData.append("deadline", "2024-12-27 23:59:59");
+    formData.append("question_path", questionfile); // Ensure this is a file object
+    formData.append("key_path", keyfile); // Ensure this is a file object
+    formData.append("total_marks", mark);
+    formData.append("technical_setting", true);
+    formData.append("grammar_setting", false);
+    formData.append("spelling_setting", false);
+    formData.append("status", "ongoing");
 
-      console.log("Response from API:", response.data);
+    try {
+      const response = await fetch(
+        `http://localhost:8000/professor/postAssignment`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+      console.log(data);
       alert("Assignment created successfully!");
     } catch (error) {
       console.error("Error creating assignment:", error);
       alert("Failed to create assignment.");
     }
   };
+  */
 
   return (
     <div className="w-[75%] flex flex-col justify-center items-center gap-5 relative">
@@ -226,14 +272,14 @@ const ProfessorDashboard = () => {
                   className="text-black"
                   selected={deadline}
                   onChange={(newDate) => {
-                    SetDeadline(newDate);
                     const formattedDate = `${newDate.getFullYear()}-${String(
                       newDate.getMonth() + 1
                     ).padStart(2, "0")}-${String(newDate.getDate()).padStart(
                       2,
                       "0"
                     )} 23:59:59`;
-                    console.log(formattedDate); // This will log the date and time in "YYYY-MM-DD 23:59:59" format
+                    console.log(formattedDate);
+                    SetDeadline(formattedDate); // This will log the date and time in "YYYY-MM-DD 23:59:59" format
                   }}
                 />
               </div>
