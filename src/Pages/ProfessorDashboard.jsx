@@ -41,7 +41,7 @@ const ProfessorDashboard = () => {
       .post(`http://localhost:8080/professor/plag_check?a_id=${assignId}`)
       .then((res) => {
         console.log("plagiarism executed");
-        const fileName = `Assign - ${assignId} Plagiarism.pdf`;
+        const fileName = `Assignment-${assignId} Plagiarism.pdf`;
         const fileUrl = res.data?.result_path;
 
         // Trigger download
@@ -58,9 +58,23 @@ const ProfessorDashboard = () => {
   };
 
   const handleGrade = (assignId) => {
-    axios.post(`http://localhost:8080/professor/grade?a_id=${assignId}`),
-      then(() => {
-        console.log("plagiarism executed");
+    axios
+      .post(`http://localhost:8080/professor/grade?a_id=${assignId}`)
+      .then((res) => {
+        console.log("Grade executed");
+        const fileName = `Assign - ${assignId} Plagiarism.pdf`;
+        const fileUrl = res.data?.result_path;
+
+        // Trigger download
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.setAttribute("download", fileName); // Set suggested file name
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -373,7 +387,7 @@ const ProfessorDashboard = () => {
       </div>
       <div className="w-full grid grid-cols-3 gap-4">
         {allAssignments?.assignments?.map((ele, ind) => (
-          <div className="flex flex-col justify-around items-center bg-[#171717] p-4 rounded-xl min-h-[33vh]">
+          <div className="flex flex-col justify-around items-center bg-[#171717] border-2 border-[#171717] p-4 rounded-xl ease-linear min-h-[33vh] hover:border-green-500 transition-all duration-200">
             <div className="flex flex-col gap-2 text-xl">
               <h1>
                 <strong>Assignment name : </strong>

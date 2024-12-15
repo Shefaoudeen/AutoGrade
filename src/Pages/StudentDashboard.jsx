@@ -26,10 +26,23 @@ const StudentDashboard = () => {
     }
   };
 
+  const downLoadQuestion = (assignId, path) => {
+    const fileName = `Assignment-${assignId} Question.pdf`;
+    const fileUrl = path;
+
+    // Trigger download
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.setAttribute("download", fileName); // Set suggested file name
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   useEffect(() => {
     axios
       .get(
-        `http://localhost:8000/student/getAssignment?student_id=${studentId}&filter=all`
+        `http://localhost:8080/student/getAssignment?student_id=${studentId}&filter=all`
       )
       .then((res) => {
         setAllAssignment(res.data);
@@ -49,7 +62,7 @@ const StudentDashboard = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8000/student/submitAssignment?p_id=${studentId}&a_id=${assignId}&status=submitted`,
+        `http://localhost:8080/student/submitAssignment?p_id=${studentId}&a_id=${assignId}&status=submitted`,
         formData,
         {
           headers: {
@@ -67,12 +80,14 @@ const StudentDashboard = () => {
   return (
     <div className="w-[75%] flex flex-col justify-center items-center gap-5">
       <div>
-        <h1>Welcome {studentName} 👋</h1>
+        <h1 className="text-2xl">
+          Welcome <strong>{studentName}</strong> 👋
+        </h1>
       </div>
-      <div className="w-full flex flex-col p-4 gap-4">
+      <div className="w-full grid grid-cols-3 gap-4">
         {allAssignments?.assignments?.map((ele, ind) => (
-          <div className="flex justify-between items-center bg-slate-200 p-4 rounded-xl">
-            <div className="flex gap-10">
+          <div className="flex flex-col justify-between  bg-[#171717] p-4 rounded-xl">
+            <div className="flex flex-col gap-3">
               <h1>
                 <strong>Title : </strong>
                 {ele?.title}
@@ -98,37 +113,51 @@ const StudentDashboard = () => {
                   : ele?.percentage}
               </h1>
             </div>
-            <div>
+            <div className="mt-5">
               {ele?.submission_status === "pending" ? (
-                <div className="flex gap-3">
-                  <div className="flex flex-col gap-4">
-                    <div>
-                      <label
-                        htmlFor="file-input-question"
-                        className="bg-slate-700 p-2 rounded-md text-white"
-                      >
-                        Browse File
-                      </label>
-                      <input
-                        id="file-input-question"
-                        type="file"
-                        style={{ display: "none" }}
-                        onChange={(e) =>
-                          handleFileChange(
-                            e,
-                            setAssignFile,
-                            setUploadFile,
-                            ele?.a_id
-                          )
-                        }
-                      />
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex gap-2 items-center">
+                      <div>
+                        <button
+                          className="bg-slate-500 p-2 rounded-md"
+                          onClick={() =>
+                            downLoadQuestion(ele?.a_id, ele?.question_path)
+                          }
+                        >
+                          Download Question
+                        </button>
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        <div>
+                          <label
+                            htmlFor="file-input-question"
+                            className="bg-slate-700 p-2 rounded-md text-white"
+                          >
+                            Browse File
+                          </label>
+                          <input
+                            id="file-input-question"
+                            type="file"
+                            style={{ display: "none" }}
+                            onChange={(e) =>
+                              handleFileChange(
+                                e,
+                                setAssignFile,
+                                setUploadFile,
+                                ele?.a_id
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
                     </div>
                     {selectassign === ele?.a_id ? <h1>{uploadfile}</h1> : ""}
                   </div>
                   <div>
                     {selectassign === ele?.a_id ? (
                       <button
-                        className="bg-rose-400 p-2 rounded-lg shadow-md shadow-black text-white"
+                        className="bg-green-400 p-2 rounded-lg shadow-md shadow-black text-white"
                         onClick={() => handleSubmission(ele?.a_id)}
                       >
                         Submit

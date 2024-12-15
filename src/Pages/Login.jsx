@@ -8,18 +8,19 @@ const Login = () => {
   const [authenticated, SetAuthenticated] = useState(null);
   const [username, SetUsername] = useState("");
   const [password, SetPassword] = useState("");
+  const [role, SetRole] = useState(null);
 
   const onSubmit = () => {
     if (username == "" || password == "") {
       alert("Enter the required Fields");
       return;
     }
-    if (id == "professor") {
+    if (role === "P") {
       //Professor login
 
       axios
         .get(
-          `http://localhost:8000/login/?username=${username}&password=${password}&role=P`
+          `http://localhost:8080/login/?username=${username}&password=${password}&role=P`
         )
         .then((res) => {
           console.log(res.data);
@@ -40,11 +41,11 @@ const Login = () => {
           console.log(err);
         });
     }
-    if (id == "student") {
+    if (role === "S") {
       /*Student login */
       axios
         .get(
-          `http://localhost:8000/login/?username=${username}&password=${password}&role=S`
+          `http://localhost:8080/login/?username=${username}&password=${password}&role=S`
         )
         .then((res) => {
           console.log(res.data);
@@ -69,7 +70,7 @@ const Login = () => {
 
   return (
     <div>
-      <div className="flex flex-col gap-4 items-center border-2 border-black px-6 py-4">
+      <div className="flex flex-col gap-4 items-center  justify-around px-6 py-4 bg-[#171717] min-h-[30vh]">
         <div>
           Username :{" "}
           <input
@@ -78,7 +79,7 @@ const Login = () => {
             onChange={(e) => {
               SetUsername(e.target.value);
             }}
-            className="bg-gray-300 rounded-md shadow-md shadow-gray-800 p-1"
+            className="bg-gray-300 rounded-md shadow-md shadow-gray-800 p-1 text-black"
           />
         </div>
         <div>
@@ -89,11 +90,32 @@ const Login = () => {
             onChange={(e) => {
               SetPassword(e.target.value);
             }}
-            className="bg-gray-300 rounded-md shadow-md shadow-gray-800 p-1"
+            className="bg-gray-300 rounded-md shadow-md shadow-gray-800 p-1 text-black"
           />
         </div>
+        <div className="flex gap-2 items-center">
+          Role :{" "}
+          <div className="flex gap-2">
+            <button
+              className={`${
+                role === "S" ? "bg-green-400" : "bg-slate-400"
+              } px-4 py-2 rounded-xl`}
+              onClick={() => SetRole("S")}
+            >
+              Student
+            </button>
+            <button
+              className={`${
+                role === "P" ? "bg-green-400" : "bg-slate-400"
+              } px-4 py-2 rounded-xl`}
+              onClick={() => SetRole("P")}
+            >
+              Professor
+            </button>
+          </div>
+        </div>
         <button
-          className="bg-blue-400 px-4 py-2 rounded-lg text-white shadow-md shadow-black "
+          className="bg-green-400 px-4 py-2 rounded-lg text-white shadow-md shadow-black "
           onClick={onSubmit}
         >
           Submit
