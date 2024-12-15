@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -25,6 +25,7 @@ const ProfessorDashboard = () => {
   const [deadline, SetDeadline] = useState(formatingDate(new Date()));
   const [uploadedfile1, setuploadfile1] = useState(null);
   const [uploadedfile2, setuploadfile2] = useState(null);
+  const [allAssignments, SetAllAssignments] = useState([]);
 
   const handleFileChange = (event, setFileState, setUploadFileState) => {
     const selectedFile = event.target.files[0];
@@ -34,6 +35,30 @@ const ProfessorDashboard = () => {
       console.log(selectedFile.name); // Log the name of the uploaded file
     }
   };
+
+  const DeleteAssignment = (assignId) => {
+    axios
+      .delete(
+        `http://localhost:8000/professor/deleteAssignment?a_id=${assignId}`
+      )
+      .then(() => {
+        console.log("deleted");
+        window.location.reload(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    axios
+      .get(
+        `http://localhost:8000/professor/getAssignment?p_id=${professorId}&filter=ongoing`
+      )
+      .then((res) => {
+        SetAllAssignments(res.data);
+      });
+  }, []);
 
   const handleSubmit = async () => {
     /*
@@ -73,6 +98,8 @@ const ProfessorDashboard = () => {
         }
       );
       console.log("File uploaded successfully:", response.data);
+      SetCreateScreen(false);
+      window.location.reload(false);
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -315,24 +342,25 @@ const ProfessorDashboard = () => {
         </button>
       </div>
       <div className="w-full flex flex-col p-4 gap-4">
-        <div className="flex justify-between items-center bg-slate-200 p-4 rounded-xl">
-          <div className="flex gap-10">
-            <h1>Assignment - name1</h1>
-            <h1>Dec 10</h1>
+        {allAssignments?.assignments?.map((ele, ind) => (
+          <div className="flex justify-between items-center bg-slate-200 p-4 rounded-xl">
+            <div className="flex gap-10">
+              <h1>Assignment name : {ele?.title}</h1>
+              <h1>Deadline : {ele?.deadline}</h1>
+            </div>
+            <div className="flex gap-4">
+              <button className="bg-slate-400 p-2 rounded-lg shadow-md shadow-black">
+                Check
+              </button>
+              <button
+                className="bg-rose-400  p-2 rounded-lg shadow-md shadow-black"
+                onClick={() => DeleteAssignment(ele?.a_id)}
+              >
+                Delete
+              </button>
+            </div>
           </div>
-          <button className="bg-slate-400 p-2 rounded-lg shadow-md shadow-black">
-            Check Assignment
-          </button>
-        </div>
-        <div className="flex justify-between items-center bg-slate-200 p-4 rounded-xl">
-          <div className="flex gap-10">
-            <h1>Assignment - name1</h1>
-            <h1>Dec 12</h1>
-          </div>
-          <button className="bg-slate-400 p-2 rounded-lg shadow-md shadow-black">
-            Check Assignment
-          </button>
-        </div>
+        ))}
       </div>
     </div>
   );
