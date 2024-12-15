@@ -36,10 +36,38 @@ const ProfessorDashboard = () => {
     }
   };
 
+  const handlePlagiarism = (assignId) => {
+    axios
+      .post(`http://localhost:8080/professor/plag_check?a_id=${assignId}`)
+      .then((res) => {
+        console.log("plagiarism executed");
+        const fileName = `Assign - ${assignId} Plagiarism.pdf`;
+        const fileUrl = res.data?.result_path;
+
+        // Trigger download
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.setAttribute("download", fileName); // Set suggested file name
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleGrade = (assignId) => {
+    axios.post(`http://localhost:8080/professor/grade?a_id=${assignId}`),
+      then(() => {
+        console.log("plagiarism executed");
+      });
+  };
+
   const DeleteAssignment = (assignId) => {
     axios
       .delete(
-        `http://localhost:8000/professor/deleteAssignment?a_id=${assignId}`
+        `http://localhost:8080/professor/deleteAssignment?a_id=${assignId}`
       )
       .then(() => {
         console.log("deleted");
@@ -53,7 +81,7 @@ const ProfessorDashboard = () => {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:8000/professor/getAssignment?p_id=${professorId}&filter=ongoing`
+        `http://localhost:8080/professor/getAssignment?p_id=${professorId}&filter=ongoing`
       )
       .then((res) => {
         SetAllAssignments(res.data);
@@ -89,7 +117,7 @@ const ProfessorDashboard = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8000/professor/postAssignment?p_id=${professorId}&title=${name}&deadline=${deadline}&total_marks=${mark}&technical_setting=${tech}&grammar_setting=${grammar}&spelling_setting=${speeling}&status=ongoing`,
+        `http://localhost:8080/professor/postAssignment?p_id=${professorId}&title=${name}&deadline=${deadline}&total_marks=${mark}&technical_setting=${tech}&grammar_setting=${grammar}&spelling_setting=${speeling}&status=ongoing`,
         formData,
         {
           headers: {
@@ -120,7 +148,7 @@ const ProfessorDashboard = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/professor/postAssignment`,
+        `http://localhost:8080/professor/postAssignment`,
         {
           method: "POST",
           body: formData,
@@ -140,11 +168,11 @@ const ProfessorDashboard = () => {
   return (
     <div className="w-[75%] flex flex-col justify-center items-center gap-5 relative">
       <div
-        className={`absolute min-h-screen w-screen bg-slate-500/50 z-10 flex justify-center items-center ${
+        className={`absolute min-h-screen w-screen bg-black/40 z-10 flex justify-center items-center ${
           createScreen ? "" : "hidden"
         }`}
       >
-        <div className="w-[75%] rounded-md bg-slate-700 text-white p-4 flex flex-col justify-center items-center">
+        <div className="w-[75%] rounded-md bg-[#171717] text-white p-4 flex flex-col justify-center items-center">
           <h1 className="text-2xl font-bold">
             Professor Panel : Create Assignment
           </h1>
@@ -152,7 +180,7 @@ const ProfessorDashboard = () => {
             <div className="mt-5 flex items-center gap-2">
               <label>Assignment Name : </label>
               <input
-                className="bg-slate-500 rounded-md w-[50%]"
+                className="bg-[#3a3939] rounded-md w-[50%]"
                 type="text"
                 value={name}
                 onChange={(e) => {
@@ -163,7 +191,7 @@ const ProfessorDashboard = () => {
             {/* Upload Question File */}
             <div>
               <h1 className="font-bold">Upload Question PDF</h1>
-              <div className="flex justify-between items-center rounded-md mt-2 bg-slate-500 p-2">
+              <div className="flex justify-between items-center rounded-md mt-2 bg-[#3a3939] p-2">
                 <div className="flex gap-4">
                   <div>UPLOAD LOGO</div>
                   <div>
@@ -176,7 +204,7 @@ const ProfessorDashboard = () => {
                 <div>
                   <label
                     htmlFor="file-input-question"
-                    className="bg-slate-700 p-2 rounded-md"
+                    className="bg-green-400 p-2 rounded-md font-bold"
                   >
                     Browse file
                   </label>
@@ -203,7 +231,7 @@ const ProfessorDashboard = () => {
             {/* Upload Key File */}
             <div>
               <h1 className="font-bold">Upload Key PDF</h1>
-              <div className="flex justify-between items-center rounded-md mt-2 bg-slate-500 p-2">
+              <div className="flex justify-between items-center rounded-md mt-2 bg-[#3a3939] p-2">
                 <div className="flex gap-4">
                   <div>UPLOAD LOGO</div>
                   <div>
@@ -216,7 +244,7 @@ const ProfessorDashboard = () => {
                 <div>
                   <label
                     htmlFor="file-input-key"
-                    className="bg-slate-700 p-2 rounded-md"
+                    className="bg-green-400 p-2 rounded-md font-bold"
                   >
                     Browse file
                   </label>
@@ -241,7 +269,7 @@ const ProfessorDashboard = () => {
             </div>
             <div>
               <h1 className="font-bold">Enter Total Marks</h1>
-              <div className="flex justify-between items-center rounded-md mt-2 bg-slate-500 p-2">
+              <div className="flex justify-between items-center rounded-md mt-2 bg-[#3a3939] p-2">
                 <h1>{mark}</h1>
                 <div className="flex gap-3">
                   <button
@@ -250,7 +278,7 @@ const ProfessorDashboard = () => {
                         setMark(mark - 1);
                       }
                     }}
-                    className="font-bold text-xl bg-slate-700 px-2 rounded-md"
+                    className="font-bold text-xl bg-red-500 px-2 rounded-md"
                   >
                     -
                   </button>
@@ -258,7 +286,7 @@ const ProfessorDashboard = () => {
                     onClick={() => {
                       setMark(mark + 1);
                     }}
-                    className="font-bold text-xl bg-slate-700 px-2 rounded-md"
+                    className="font-bold text-xl bg-blue-500 px-2 rounded-md"
                   >
                     +
                   </button>
@@ -329,11 +357,13 @@ const ProfessorDashboard = () => {
         </div>
       </div>
       <div>
-        <h1>Welcome {professorName} 👋</h1>
+        <h1 className="text-2xl">
+          Welcome <strong>{professorName}</strong> 👋
+        </h1>
       </div>
       <div className="w-full">
         <button
-          className="bg-rose-500 p-2 text-white rounded-lg"
+          className="bg-green-500 p-2 text-white rounded-lg"
           onClick={() => {
             SetCreateScreen(true);
           }}
@@ -341,19 +371,38 @@ const ProfessorDashboard = () => {
           + Create new Assignment
         </button>
       </div>
-      <div className="w-full flex flex-col p-4 gap-4">
+      <div className="w-full grid grid-cols-3 gap-4">
         {allAssignments?.assignments?.map((ele, ind) => (
-          <div className="flex justify-between items-center bg-slate-200 p-4 rounded-xl">
-            <div className="flex gap-10">
-              <h1>Assignment name : {ele?.title}</h1>
-              <h1>Deadline : {ele?.deadline}</h1>
+          <div className="flex flex-col justify-around items-center bg-[#171717] p-4 rounded-xl min-h-[33vh]">
+            <div className="flex flex-col gap-2 text-xl">
+              <h1>
+                <strong>Assignment name : </strong>
+                {ele?.title}
+              </h1>
+              <h1>
+                <strong>Assignment ID : </strong>
+                {ele?.a_id}
+              </h1>
+              <h1>
+                <strong>Deadline : </strong>
+                {ele?.deadline.toString().slice(0, 10)}
+              </h1>
             </div>
-            <div className="flex gap-4">
-              <button className="bg-slate-400 p-2 rounded-lg shadow-md shadow-black">
-                Check
+            <div className="flex gap-4 text-white">
+              <button
+                className="bg-slate-400 p-2 rounded-lg shadow-sm shadow-green-200 hover:bg-green-500 transition-all duration-150 "
+                onClick={() => handleGrade(ele?.a_id)}
+              >
+                Grade
               </button>
               <button
-                className="bg-rose-400  p-2 rounded-lg shadow-md shadow-black"
+                className="bg-slate-500 p-2 rounded-lg shadow-sm shadow-green-200 hover:bg-green-500 transition-all duration-150"
+                onClick={() => handlePlagiarism(ele?.a_id)}
+              >
+                Plagiarism
+              </button>
+              <button
+                className="bg-slate-600  p-2 rounded-lg shadow-sm shadow-green-200 hover:bg-green-500 transition-all duration-150"
                 onClick={() => DeleteAssignment(ele?.a_id)}
               >
                 Delete
