@@ -38,7 +38,7 @@ const ProfessorDashboard = () => {
 
   const handlePlagiarism = (assignId) => {
     axios
-      .post(`http://localhost:8080/professor/plag_check?a_id=${assignId}`)
+      .post(`http://localhost:8000/professor/plag_check?a_id=${assignId}`)
       .then((res) => {
         console.log("plagiarism executed");
         const fileName = `Assignment-${assignId} Plagiarism.pdf`;
@@ -59,7 +59,7 @@ const ProfessorDashboard = () => {
 
   const handleGrade = (assignId) => {
     axios
-      .post(`http://localhost:8080/professor/grade?a_id=${assignId}`)
+      .post(`http://localhost:8000/professor/grade?a_id=${assignId}`)
       .then((res) => {
         console.log("Grade executed");
         const fileName = `Assign - ${assignId} Plagiarism.pdf`;
@@ -81,7 +81,7 @@ const ProfessorDashboard = () => {
   const DeleteAssignment = (assignId) => {
     axios
       .delete(
-        `http://localhost:8080/professor/deleteAssignment?a_id=${assignId}`
+        `http://localhost:8000/professor/deleteAssignment?a_id=${assignId}`
       )
       .then(() => {
         console.log("deleted");
@@ -95,7 +95,7 @@ const ProfessorDashboard = () => {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:8080/professor/getAssignment?p_id=${professorId}&filter=ongoing`
+        `http://localhost:8000/professor/getAssignment?p_id=${professorId}&filter=ongoing`
       )
       .then((res) => {
         SetAllAssignments(res.data);
@@ -131,7 +131,7 @@ const ProfessorDashboard = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/professor/postAssignment?p_id=${professorId}&title=${name}&deadline=${deadline}&total_marks=${mark}&technical_setting=${tech}&grammar_setting=${grammar}&spelling_setting=${speeling}&status=ongoing`,
+        `http://localhost:8000/professor/postAssignment?p_id=${professorId}&title=${name}&deadline=${deadline}&total_marks=${mark}&technical_setting=${tech}&grammar_setting=${grammar}&spelling_setting=${speeling}&status=ongoing`,
         formData,
         {
           headers: {
@@ -162,7 +162,7 @@ const ProfessorDashboard = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/professor/postAssignment`,
+        `http://localhost:8000/professor/postAssignment`,
         {
           method: "POST",
           body: formData,

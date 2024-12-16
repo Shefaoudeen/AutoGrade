@@ -20,7 +20,7 @@ const Login = () => {
 
       axios
         .get(
-          `http://localhost:8080/login/?username=${username}&password=${password}&role=P`
+          `http://localhost:8000/login/?username=${username}&password=${password}&role=P`
         )
         .then((res) => {
           console.log(res.data);
@@ -45,7 +45,7 @@ const Login = () => {
       /*Student login */
       axios
         .get(
-          `http://localhost:8080/login/?username=${username}&password=${password}&role=S`
+          `http://localhost:8000/login/?username=${username}&password=${password}&role=S`
         )
         .then((res) => {
           console.log(res.data);

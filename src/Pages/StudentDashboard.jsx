@@ -42,7 +42,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:8080/student/getAssignment?student_id=${studentId}&filter=all`
+        `http://localhost:8000/student/getAssignment?student_id=${studentId}&filter=all`
       )
       .then((res) => {
         setAllAssignment(res.data);
@@ -62,7 +62,7 @@ const StudentDashboard = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/student/submitAssignment?p_id=${studentId}&a_id=${assignId}&status=submitted`,
+        `http://localhost:8000/student/submitAssignment?p_id=${studentId}&a_id=${assignId}&status=submitted`,
         formData,
         {
           headers: {
