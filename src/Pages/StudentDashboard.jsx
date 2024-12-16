@@ -168,9 +168,19 @@ const StudentDashboard = () => {
                   </div>
                 </div>
               ) : (
-                <button className="bg-slate-400 p-2 rounded-lg shadow-md shadow-black text-white">
-                  Submitted
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    className="bg-slate-500 p-2 rounded-md"
+                    onClick={() =>
+                      downLoadQuestion(ele?.a_id, ele?.question_path)
+                    }
+                  >
+                    Download Question
+                  </button>
+                  <button className="bg-slate-400 p-2 rounded-lg shadow-md shadow-black text-white">
+                    Submitted
+                  </button>
+                </div>
               )}
             </div>
           </div>
